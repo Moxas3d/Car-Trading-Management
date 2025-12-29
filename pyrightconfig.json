@@ -1,0 +1,7 @@
+{
+  "include": ["custom_addons", "odoo-18"],
+  "extraPaths": ["./odoo-18", "./odoo-18/odoo", "./custom_addons"],
+  "typeCheckingMode": "off",
+  "reportMissingImports": false,
+  "reportArgumentType": false
+}

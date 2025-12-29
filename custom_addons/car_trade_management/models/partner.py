@@ -2,7 +2,7 @@ from odoo import models, fields
 
 
 class Partner(models.Model):
-    _name = "partner"
+    _name = "car.trading.partner"
     _description = "Vendor / Customer"
 
     name = fields.Char(required=True)
