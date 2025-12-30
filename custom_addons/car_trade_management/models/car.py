@@ -10,7 +10,7 @@ class Car(models.Model):
     brand = fields.Char()
     model = fields.Char()
     year = fields.Integer()
-    cost_price = fields.Float()
+    purchase_price = fields.Float()
     sale_price = fields.Float()
     state = fields.Selection(
         [

@@ -1,15 +1,17 @@
 from odoo import models, fields
 
 
-class PaymentStrategy(models.Model):
-    _name = "car.trading.payment.strategy"
-    _description = "Payment Strategy"
+class InstallmentStrategy(models.Model):
+    _name = "car.trading.installment.strategy"
+    _description = "Installment Strategy"
 
     name = fields.Char(required=True)
 
     months = fields.Integer(
         required=True, help="Number of installment months (e.g. 6, 12, 24)"
     )
+
+    bank_id = fields.Many2one("car.trading.bank")
 
     down_payment_percent = fields.Float(
         string="Down Payment %", help="Percentage of car price paid upfront"

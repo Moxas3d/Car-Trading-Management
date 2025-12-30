@@ -16,7 +16,9 @@ class Sale(models.Model):
             ("installment", "Installment"),
         ]
     )
-    payment_strategy_id = fields.Many2one("car.trading.payment.strategy", required=True)
+    installment_strategy_id = fields.Many2one(
+        "car.trading.installment.strategy", required=True
+    )
 
     installment_ids = fields.One2many(
         "car.trading.installment", "sale_id", domain=[("installment_type", "=", "sale")]

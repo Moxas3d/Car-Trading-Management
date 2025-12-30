@@ -7,25 +7,10 @@ class Purchase(models.Model):
 
     name = fields.Char(default="New")
     vendor_id = fields.Many2one("car.trading.partner")
+    number_of_cars = fields.Integer()
     car_ids = fields.One2many("car.trading.car")
-
-    total_amount = fields.Float()
-
-    paid_amount = fields.Float()  # computed
-    remaining_amount = fields.Float()  # computed
-
-    installment_ids = fields.One2many(
-        "car.trading.installment",
-        "purchase_id",
-        domain=[("installment_type", "=", "purchase")],
-    )
-
-    payment_type = fields.Selection(
-        [
-            ("cash", "Cash"),
-            ("installment", "Installment"),
-        ]
-    )
+    total_purchase_price = fields.Float()
+    cost_per_car = fields.Float()
 
     state = fields.Selection(
         [

@@ -6,18 +6,7 @@ class CarTradingInstallment(models.Model):
     _description = "Car Trading Installment"
     _order = "due_date"
 
-    partner_id = fields.Many2one("car.trading.partner", required=True, readonly=True)
-    installment_type = fields.Selection(
-        [
-            ("purchase", "Purchase"),
-            ("sale", "Sale"),
-        ],
-        required=True,
-    )
-
-    purchase_id = fields.Many2one(
-        "car.trading.purchase.order", string="Purchase Order", ondelete="cascade"
-    )
+    # partner_id (related)
 
     sale_id = fields.Many2one(
         "car.trading.sale.order", string="Sale Order", ondelete="cascade"
