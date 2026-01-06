@@ -1,11 +1,12 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 
 class Purchase(models.Model):
     _name = "car.trading.purchase.order"
     _description = "Car Purchase"
 
-    name = fields.Char(default="New")
+    name = fields.Char(default="New", readonly=True)
     vendor_id = fields.Many2one("res.partner", domain=[("partner_type", "=", "vendor")])
     car_ids = fields.One2many("car.trading.car", "purchase_order_id", string="Cars")
 
@@ -35,3 +36,70 @@ class Purchase(models.Model):
             cars = rec.car_ids
             rec.number_of_cars = len(cars)
             rec.total_purchase_price = sum(cars.mapped("purchase_price"))
+
+    @api.model
+    def create(self, vals):
+        if vals.get("name", "New") == "New":
+            vals["name"] = (
+                self.env["ir.sequence"].next_by_code("car.trading.purchase.order")
+                or "New"
+            )
+        return super().create(vals)
+
+    def _check_before_confirm(self):
+        for rec in self:
+            if not rec.car_ids:
+                raise ValidationError("You must add at least one car.")
+
+            vins = rec.car_ids.mapped("vin")
+            if any(not vin for vin in vins):
+                raise ValidationError("All cars must have a VIN.")
+
+            if len(vins) != len(set(vins)):
+                raise ValidationError("Duplicate VINs are not allowed.")
+
+    def action_confirm(self):
+        for rec in self:
+            if rec.state != "draft":
+                continue
+
+            rec._check_before_confirm()
+
+            rec.state = "confirmed"
+
+            rec.car_ids.write(
+                {
+                    "state": "purchased",
+                }
+            )
+
+    def action_done(self):
+        for rec in self:
+            if rec.state != "confirmed":
+                continue
+
+            rec.state = "done"
+
+            rec.car_ids.write(
+                {
+                    "state": "available",
+                }
+            )
+
+    def action_cancel(self):
+        for rec in self:
+            sold_cars = rec.car_ids.filtered(lambda c: c.state == "sold")
+            if sold_cars:
+                raise ValidationError(
+                    "You cannot cancel a purchase order with sold cars."
+                )
+
+            rec.state = "cancel"
+            rec.car_ids.write({"state": "draft"})
+
+    @api.constrains("state")
+    def _check_edit_after_confirm(self):
+        for rec in self:
+            if rec.state in ("confirmed", "done") and rec._origin:
+                if self.env.context.get("allow_purchase_edit"):
+                    continue

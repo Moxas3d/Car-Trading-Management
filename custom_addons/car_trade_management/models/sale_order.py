@@ -82,7 +82,6 @@ class SaleOrder(models.Model):
     )
     def _compute_remaining_amount(self):
         for rec in self:
-            # Cash payment → no remaining amount
             if rec.payment_type != "installment":
                 rec.remaining_amount = 0.0
                 continue
