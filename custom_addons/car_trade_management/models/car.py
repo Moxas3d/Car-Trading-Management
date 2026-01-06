@@ -10,8 +10,13 @@ class Car(models.Model):
     brand = fields.Char()
     model = fields.Char()
     year = fields.Integer()
-    purchase_price = fields.Float()
-    sale_price = fields.Float()
+
+    purchase_order_id = fields.Many2one("car.trading.purchase.order")
+    sale_order_id = fields.Many2one("car.trading.sale.order")
+
+    purchase_price = fields.Float(required=True)
+    sale_price = fields.Float(related="sale_order_id.sale_price", store=True)
+
     state = fields.Selection(
         [
             ("draft", "Draft"),

@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 class InstallmentStrategy(models.Model):
@@ -30,3 +30,8 @@ class InstallmentStrategy(models.Model):
     )
 
     active = fields.Boolean(default=True)
+
+    @api.depends("company_funding_amount")
+    def _compute_is_funded(self):
+        for rec in self:
+            rec.is_funded = rec.company_funding_amount > 0

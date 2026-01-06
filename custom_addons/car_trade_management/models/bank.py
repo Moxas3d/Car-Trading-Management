@@ -10,6 +10,7 @@ class Bank(models.Model):
     interest_rate = fields.Float(
         string="Interest Rate (%)",
         required=True,
+        digits=(4, 2),
     )
 
     max_installment_months = fields.Integer(
@@ -18,3 +19,11 @@ class Bank(models.Model):
     )
 
     notes = fields.Text()
+
+    _sql_constraints = [
+        (
+            "check_interest_rate_positive",
+            "CHECK(interest_rate >= 0)",
+            "The interest rate must be a positive value!",
+        )
+    ]

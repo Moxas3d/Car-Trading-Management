@@ -2,10 +2,8 @@ from odoo import models, fields
 
 
 class Partner(models.Model):
-    _name = "car.trading.partner"
-    _description = "Vendor / Customer"
+    _inherit = "res.partner"
 
-    name = fields.Char(required=True)
     partner_type = fields.Selection(
         [
             ("vendor", "Vendor"),
@@ -13,6 +11,3 @@ class Partner(models.Model):
         ],
         required=True,
     )
-
-    phone = fields.Char()
-    description = fields.Text()
