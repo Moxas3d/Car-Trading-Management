@@ -1,11 +1,14 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+from dateutil.relativedelta import relativedelta
 
 
 class SaleOrder(models.Model):
     _name = "car.trading.sale.order"
     _description = "Car Sale"
 
-    name = fields.Char(default="New")
+    name = fields.Char(default="New", readonly=True)
+
     customer_id = fields.Many2one(
         "res.partner", domain=[("partner_type", "=", "customer")]
     )
@@ -29,6 +32,7 @@ class SaleOrder(models.Model):
             ("confirmed", "Confirmed"),
             ("delivered", "Delivered"),
             ("done", "Done"),
+            ("cancel", "Cancelled"),
         ],
         default="draft",
     )
@@ -75,6 +79,11 @@ class SaleOrder(models.Model):
         store=True,
     )
 
+    all_money_paid = fields.Boolean(
+        compute="_compute_all_money_paid",
+        store=True,
+    )
+
     @api.depends(
         "payment_type",
         "installment_ids.amount",
@@ -89,3 +98,133 @@ class SaleOrder(models.Model):
             unpaid_installments = rec.installment_ids.filtered(lambda i: not i.paid)
 
             rec.remaining_amount = sum(unpaid_installments.mapped("amount"))
+
+    @api.model
+    def create(self, vals):
+        if vals.get("name", "New") == "New":
+            vals["name"] = (
+                self.env["ir.sequence"].next_by_code("car.trading.sale.order") or "New"
+            )
+        return super().create(vals)
+
+    def _check_before_confirm(self):
+        for rec in self:
+            if not rec.car_id:
+                raise ValidationError("You must select a car.")
+
+            if rec.car_id.state != "available":
+                raise ValidationError("The selected car is not available for sale.")
+
+            if rec.sale_price <= 0:
+                raise ValidationError("Sale price must be greater than zero.")
+
+            if rec.payment_type == "installment":
+                if not rec.installment_strategy_id:
+                    raise ValidationError(
+                        "Installment strategy is required for installment payments."
+                    )
+
+                bank = rec.installment_strategy_id.bank_id
+                if (
+                    bank
+                    and rec.installment_strategy_id.months > bank.max_installment_months
+                ):
+                    raise ValidationError(
+                        "Installment months exceed the bank's maximum allowed months."
+                    )
+
+    def action_confirm(self):
+        for rec in self:
+            if rec.state != "draft":
+                continue
+
+            rec._check_before_confirm()
+
+            rec.car_id.write(
+                {
+                    "state": "sold",
+                    "sale_order_id": rec.id,
+                }
+            )
+
+            rec.state = "confirmed"
+
+            if rec.payment_type == "installment":
+                rec._generate_installments()
+
+    def _generate_installments(self):
+        for rec in self:
+            rec.installment_ids.unlink()
+
+            months = rec.installment_strategy_id.months
+            amount_per_installment = rec.sale_price / months
+            start_date = fields.Date.today()
+
+            installments = []
+            for i in range(1, months + 1):
+                installments.append(
+                    {
+                        "sale_id": rec.id,
+                        "sequence": i,
+                        "amount": amount_per_installment,
+                        "due_date": start_date + relativedelta(months=i),
+                    }
+                )
+
+            self.env["car.trading.installment"].create(installments)
+
+    def action_deliver(self):
+        for rec in self:
+            if rec.state != "confirmed":
+                continue
+
+            rec.state = "delivered"
+
+            if rec.payment_type == "cash":
+                rec.state = "done"
+
+    @api.depends("installment_ids.paid")
+    def _compute_all_money_paid(self):
+        for rec in self:
+            if rec.payment_type != "installment":
+                rec.all_money_paid = True
+            else:
+                rec.all_money_paid = (
+                    all(rec.installment_ids.mapped("paid"))
+                    if rec.installment_ids
+                    else False
+                )
+
+    def action_done(self):
+        for rec in self:
+            if rec.state != "delivered":
+                raise ValidationError(
+                    "Sale order must be delivered before it can be marked as done."
+                )
+
+            if rec.payment_type == "installment" and not rec.all_money_paid:
+                raise ValidationError(
+                    "All installments must be paid before closing the sale order."
+                )
+
+            rec.state = "done"
+
+    def action_cancel(self):
+        for rec in self:
+            paid_installments = rec.installment_ids.filtered(lambda i: i.paid)
+            if paid_installments:
+                raise ValidationError(
+                    "You cannot cancel a sale order with paid installments."
+                )
+
+            rec.installment_ids.unlink()
+
+            if rec.car_id:
+                rec.car_id.write(
+                    {
+                        "state": "available",
+                        "sale_order_id": False,
+                    }
+                )
+
+            rec.state = "draft"

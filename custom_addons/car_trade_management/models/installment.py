@@ -39,3 +39,18 @@ class CarTradingInstallment(models.Model):
                 rec.state = "overdue"
             else:
                 rec.state = "due"
+
+    def write(self, vals):
+        res = super().write(vals)
+
+        if "paid" in vals:
+            sales = self.mapped("sale_id")
+            for sale in sales:
+                if (
+                    sale.state == "delivered"
+                    and sale.payment_type == "installment"
+                    and all(sale.installment_ids.mapped("paid"))
+                ):
+                    sale.state = "done"
+
+        return res
