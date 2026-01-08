@@ -152,16 +152,60 @@ class SaleOrder(models.Model):
             if rec.payment_type == "installment":
                 rec._generate_installments()
 
+    # def _generate_installments(self):
+    #     for rec in self:
+    #         rec.installment_ids.unlink()
+    #
+    #         months = rec.installment_strategy_id.months
+    #         amount_per_installment = rec.sale_price / months
+    #         start_date = fields.Date.today()
+    #
+    #         installments = []
+    #         for i in range(1, months + 1):
+    #             installments.append(
+    #                 {
+    #                     "sale_id": rec.id,
+    #                     "sequence": i,
+    #                     "amount": amount_per_installment,
+    #                     "due_date": start_date + relativedelta(months=i),
+    #                 }
+    #             )
+    #
+    #         self.env["car.trading.installment"].create(installments)
+
     def _generate_installments(self):
         for rec in self:
             rec.installment_ids.unlink()
 
-            months = rec.installment_strategy_id.months
-            amount_per_installment = rec.sale_price / months
+            if rec.payment_type != "installment":
+                return
+
+            strategy = rec.installment_strategy_id
+            if not strategy or strategy.months <= 0:
+                return
+
+            # 1️⃣ Down payment
+            down_payment_percent = rec.down_payment_percent or 0.0
+            down_payment_amount = rec.sale_price * (down_payment_percent / 100)
+
+            # 2️⃣ Interest calculation
+            bank_interest = rec.bank_interest_amount or 0.0
+            company_funding = rec.company_funding_amount or 0.0
+
+            customer_interest = max(bank_interest - company_funding, 0.0)
+
+            # 3️⃣ Final financed amount (customer debt)
+            financed_amount = rec.sale_price - down_payment_amount + customer_interest
+
+            if financed_amount <= 0:
+                return
+
+            # 4️⃣ Create installments
+            amount_per_installment = financed_amount / strategy.months
             start_date = fields.Date.today()
 
             installments = []
-            for i in range(1, months + 1):
+            for i in range(1, strategy.months + 1):
                 installments.append(
                     {
                         "sale_id": rec.id,
