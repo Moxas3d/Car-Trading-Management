@@ -1,0 +1,83 @@
+<odoo>
+    <data>
+        <!-- List View for Purchase Order -->
+        <record id="car_trading_purchase_order_view_list" model="ir.ui.view">
+            <field name="name">car.trading.purchase.order.view.list</field>
+            <field name="model">car.trading.purchase.order</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="vendor_id"/>
+                    <field name="number_of_cars"/>
+                    <field name="total_purchase_price"/>
+                    <field name="state"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View for Purchase Order -->
+        <record id="car_trading_purchase_order_view_form" model="ir.ui.view">
+            <field name="name">car.trading.purchase.order.view.form</field>
+            <field name="model">car.trading.purchase.order</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_confirm" type="object" string="Confirm" class="oe_highlight"
+                              invisible="state != 'draft'" />
+                        <button name="action_done" type="object" string="Mark as Done" class="oe_highlight"
+                              invisible="state == 'done'" />
+                        <button name="action_cancel" type="object" string="Cancel"
+                              invisible="state in ('done', 'cancel')" />
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="vendor_id"/>
+                            </group>
+                            <group>
+                                <field name="number_of_cars"/>
+                                <field name="total_purchase_price"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Cars">
+                                <field name="car_ids">
+                                    <list editable="bottom">
+                                        <field name="vin"/>
+                                        <field name="brand"/>
+                                        <field name="model"/>
+                                        <field name="year"/>
+                                        <field name="purchase_price"/>
+                                        <field name="state" invisible="1"/> <!-- state should be hidden as it's controlled by PO -->
+                                    </list>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name="vin"/>
+                                                <field name="brand"/>
+                                                <field name="model"/>
+                                                <field name="year"/>
+                                            </group>
+                                            <group>
+                                                <field name="purchase_price"/>
+                                            </group>
+                                        </group>
+                                    </form>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action for Purchase Order -->
+        <record id="car_trading_purchase_order_action" model="ir.actions.act_window">
+            <field name="name">Purchase Orders</field>
+            <field name="res_model">car.trading.purchase.order</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_car_trading_car,access_car_trading_car,model_car_trading_car,base.group_user,1,1,1,1
+access_car_trading_purchase_order,access_car_trading_purchase_order,model_car_trading_purchase_order,base.group_user,1,1,1,1
+access_car_trading_sale_order,access_car_trading_sale_order,model_car_trading_sale_order,base.group_user,1,1,1,1
+access_car_trading_installment,access_car_trading_installment,model_car_trading_installment,base.group_user,1,1,1,1
+access_car_trading_installment_strategy,access_car_trading_installment_strategy,model_car_trading_installment_strategy,base.group_user,1,1,1,1
+access_car_trading_bank,access_car_trading_bank,model_car_trading_bank,base.group_user,1,1,1,1

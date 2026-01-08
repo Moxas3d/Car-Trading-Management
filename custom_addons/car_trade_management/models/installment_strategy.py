@@ -5,7 +5,7 @@ class InstallmentStrategy(models.Model):
     _name = "car.trading.installment.strategy"
     _description = "Installment Strategy"
 
-    name = fields.Char(required=True)
+    name = fields.Char()
 
     months = fields.Integer(
         required=True, help="Number of installment months (e.g. 6, 12, 24)"
@@ -17,8 +17,11 @@ class InstallmentStrategy(models.Model):
         string="Down Payment %", help="Percentage of car price paid upfront"
     )
 
-    bank_interest_amount = fields.Float(
-        string="Bank Interest Amount", help="Total interest taken by bank"
+    bank_interest_rate = fields.Float(
+        related="bank_id.interest_rate",
+        string="Bank Interest Rate %",
+        help="Total interest taken by bank",
+        readonly=True,
     )
 
     company_funding_amount = fields.Float(

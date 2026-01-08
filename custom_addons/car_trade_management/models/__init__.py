@@ -1,10 +1,19 @@
-from . import car, installment, partner, payment_strategy, purchase_order, sale_order
+from . import (
+    bank,
+    car,
+    installment,
+    installment_strategy,
+    partner,
+    purchase_order,
+    sale_order,
+)
 
 __all__ = [
+    "bank",
     "car",
-    "installment",
     "partner",
-    "payment_strategy",
+    "installment",
+    "installment_strategy",
     "purchase_order",
     "sale_order",
 ]

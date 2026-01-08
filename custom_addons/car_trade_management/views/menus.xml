@@ -1,0 +1,33 @@
+<odoo>
+    <data>
+        <!-- Root Menu -->
+        <menuitem id="car_trade_management_root" name="Car Trade Management" sequence="10"/>
+
+        <!-- Car Menu -->
+        <menuitem id="car_trade_management_car_menu" name="Cars" parent="car_trade_management_root"
+                  action="car_trading_car_action" sequence="1"/>
+
+        <!-- Purchase Order Menu -->
+        <menuitem id="car_trade_management_purchase_order_menu" name="Purchase Orders" parent="car_trade_management_root"
+                  action="car_trading_purchase_order_action" sequence="2"/>
+
+        <!-- Sale Order Menu -->
+        <menuitem id="car_trade_management_sale_order_menu" name="Sale Orders" parent="car_trade_management_root"
+                  action="car_trading_sale_order_action" sequence="3"/>
+
+        <!-- Installment Menu -->
+        <menuitem id="car_trade_management_installment_menu" name="Installments" parent="car_trade_management_root"
+                  action="car_trading_installment_action" sequence="4"/>
+
+        <!-- Configuration Menu -->
+        <menuitem id="car_trade_management_configuration_menu" name="Configuration" parent="car_trade_management_root" sequence="100"/>
+
+        <!-- Bank Menu -->
+        <menuitem id="car_trade_management_bank_menu" name="Banks" parent="car_trade_management_configuration_menu"
+                  action="car_trading_bank_action" sequence="10"/>
+
+        <!-- Installment Strategy Menu -->
+        <menuitem id="car_trade_management_installment_strategy_menu" name="Installment Strategies" parent="car_trade_management_configuration_menu"
+                  action="car_trading_installment_strategy_action" sequence="20"/>
+    </data>
+</odoo>

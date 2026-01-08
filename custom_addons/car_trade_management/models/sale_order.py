@@ -55,8 +55,8 @@ class SaleOrder(models.Model):
         readonly=True,
     )
 
-    bank_interest_amount = fields.Float(
-        related="installment_strategy_id.bank_interest_amount",
+    bank_interest_rate = fields.Float(
+        related="installment_strategy_id.bank_interest_rate",
         store=True,
         readonly=True,
     )
@@ -175,30 +175,52 @@ class SaleOrder(models.Model):
 
     def _generate_installments(self):
         for rec in self:
-            rec.installment_ids.unlink()
-
             if rec.payment_type != "installment":
-                return
+                continue
 
             strategy = rec.installment_strategy_id
             if not strategy or strategy.months <= 0:
-                return
+                continue
+
+            if not rec.sale_price or rec.sale_price <= 0:
+                continue
+
+            # # 1️⃣ Down payment
+            # down_payment_percent = rec.down_payment_percent or 0.0
+            # down_payment_amount = rec.sale_price * (down_payment_percent / 100.0)
+            #
+            # # 2️⃣ Interest calculation
+            # bank_interest = (rec.sale_price - down_payment_amount) * (
+            #     rec.bank_interest_rate / 100
+            # ) or 0.0
+            #
+            # company_funding = rec.company_funding_amount or 0.0
+            #
+            # customer_interest = max(bank_interest - company_funding, 0.0)
+            #
+            # # 3️⃣ Final financed amount (customer debt)
+            # financed_amount = rec.sale_price - down_payment_amount + customer_interest
+            #
 
             # 1️⃣ Down payment
             down_payment_percent = rec.down_payment_percent or 0.0
-            down_payment_amount = rec.sale_price * (down_payment_percent / 100)
+            down_payment_amount = rec.sale_price * (down_payment_percent / 100.0)
 
             # 2️⃣ Interest calculation
-            bank_interest = rec.bank_interest_amount or 0.0
+            financed_base = rec.sale_price - down_payment_amount
+
+            bank_interest = financed_base * (rec.bank_interest_rate / 100.0)
             company_funding = rec.company_funding_amount or 0.0
 
             customer_interest = max(bank_interest - company_funding, 0.0)
 
-            # 3️⃣ Final financed amount (customer debt)
-            financed_amount = rec.sale_price - down_payment_amount + customer_interest
+            # 3️⃣ Final financed amount
+            financed_amount = financed_base + customer_interest
 
             if financed_amount <= 0:
-                return
+                continue
+
+            rec.installment_ids.unlink()
 
             # 4️⃣ Create installments
             amount_per_installment = financed_amount / strategy.months

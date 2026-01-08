@@ -35,7 +35,7 @@ class CarTradingInstallment(models.Model):
         for rec in self:
             if rec.paid:
                 rec.state = "paid"
-            elif rec.deu_date and rec.due_date < today:
+            elif rec.due_date and rec.due_date < today:
                 rec.state = "overdue"
             else:
                 rec.state = "due"

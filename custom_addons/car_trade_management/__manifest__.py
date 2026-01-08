@@ -6,7 +6,20 @@
     "depends": [
         "base",
     ],
-    "data": [],
+    "data": [
+        "security/ir.model.access.csv",
+        "data/car_sequence.xml",
+        "data/purchase_order_sequence.xml",
+        "data/sale_order_sequence.xml",
+        "views/bank_views.xml",
+        "views/installment_strategy_views.xml",
+        "views/partner_views.xml",
+        "views/car_views.xml",
+        "views/installment_views.xml",
+        "views/purchase_order_views.xml",
+        "views/sale_order_views.xml",
+        "views/menus.xml",
+    ],
     "assets": {},
     "application": True,
 }

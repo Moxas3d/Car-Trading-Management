@@ -1,11 +1,11 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 class Bank(models.Model):
     _name = "car.trading.bank"
     _description = "Financing Bank"
 
-    name = fields.Char(required=True)
+    name = fields.Char()
 
     interest_rate = fields.Float(
         string="Interest Rate (%)",

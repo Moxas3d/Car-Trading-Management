@@ -1,0 +1,76 @@
+<odoo>
+    <data>
+        <!-- List View for Sale Order -->
+        <record id="car_trading_sale_order_view_list" model="ir.ui.view">
+            <field name="name">car.trading.sale.order.view.list</field>
+            <field name="model">car.trading.sale.order</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="customer_id"/>
+                    <field name="car_id"/>
+                    <field name="sale_price"/>
+                    <field name="payment_type"/>
+                    <field name="state"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View for Sale Order -->
+        <record id="car_trading_sale_order_view_form" model="ir.ui.view">
+            <field name="name">car.trading.sale.order.view.form</field>
+            <field name="model">car.trading.sale.order</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_confirm" type="object" string="Confirm" class="oe_highlight"
+                              invisible="state != 'draft'" />
+                        <button name="action_deliver" type="object" string="Deliver" class="oe_highlight"
+                              invisible="state != 'confirmed'" />
+                        <button name="action_done" type="object" string="Mark as Done" class="oe_highlight"
+                            invisible="state != 'delivered'"  />
+                        <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('done', 'cancel')" />
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,delivered,done"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="customer_id"/>
+                                <field name="car_id" domain="[('state', '=', 'available')]"/>
+                                <field name="sale_price"/>
+                            </group>
+                            <group>
+                                <field name="payment_type"/>
+                                <field name="installment_strategy_id"
+                                      invisible="payment_type != 'installment'" required="payment_type == 'installment'"/>
+                                <field name="bank_id" invisible="payment_type != 'installment'"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Installments" invisible="payment_type != 'installment'" >
+                                <field name="installment_ids">
+                                    <list editable="bottom">
+                                        <field name="sequence"/>
+                                        <field name="amount"/>
+                                        <field name="due_date"/>
+                                        <field name="paid"/>
+                                        <field name="state"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action for Sale Order -->
+        <record id="car_trading_sale_order_action" model="ir.actions.act_window">
+            <field name="name">Sale Orders</field>
+            <field name="res_model">car.trading.sale.order</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

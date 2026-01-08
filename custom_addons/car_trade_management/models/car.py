@@ -1,11 +1,12 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 class Car(models.Model):
     _name = "car.trading.car"
     _description = "Car"
 
-    name = fields.Char(required=True)
+    name = fields.Char(default="New", readonly=True)
+
     vin = fields.Char(string="VIN", required=True, size=17)
     brand = fields.Char()
     model = fields.Char()
@@ -34,3 +35,11 @@ class Car(models.Model):
             "The Vehicle Identification Number (VIN) number must be unique!",
         )
     ]
+
+    @api.model
+    def create(self, vals):
+        if vals.get("name", "New") == "New":
+            vals["name"] = (
+                self.env["ir.sequence"].next_by_code("car.trading.car") or "New"
+            )
+        return super().create(vals)

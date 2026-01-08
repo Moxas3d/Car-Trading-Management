@@ -1,0 +1,45 @@
+<odoo>
+    <data>
+        <!-- List View -->
+        <record id="car_trading_bank_view_list" model="ir.ui.view">
+            <field name="name">car.trading.bank.view.list</field>
+            <field name="model">car.trading.bank</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="interest_rate"/>
+                    <field name="max_installment_months"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="car_trading_bank_view_form" model="ir.ui.view">
+            <field name="name">car.trading.bank.view.form</field>
+            <field name="model">car.trading.bank</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="interest_rate"/>
+                            <field name="max_installment_months"/>
+                        </group>
+                        <notebook>
+                            <page string="Notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="car_trading_bank_action" model="ir.actions.act_window">
+            <field name="name">Banks</field>
+            <field name="res_model">car.trading.bank</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>
