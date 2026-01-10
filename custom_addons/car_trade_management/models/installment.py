@@ -6,10 +6,22 @@ from datetime import date
 class CarTradingInstallment(models.Model):
     _name = "car.trading.installment"
     _description = "Car Trading Installment"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "due_date"
 
     sale_id = fields.Many2one(
         "car.trading.sale.order", string="Sale Order", ondelete="cascade"
+    )
+
+    sale_id_state = fields.Selection(
+        [
+            ("draft", "Draft"),
+            ("confirmed", "Confirmed"),
+            ("delivered", "Delivered"),
+            ("done", "Done"),
+            ("cancel", "Cancelled"),
+        ],
+        related="sale_id.state",
     )
 
     partner_id = fields.Many2one(related="sale_id.customer_id", store=True)
@@ -19,9 +31,9 @@ class CarTradingInstallment(models.Model):
     )
 
     sequence = fields.Integer(required=True)
-    amount = fields.Float(required=True)
-    due_date = fields.Date(required=True)
-    paid = fields.Boolean(default=False)
+    amount = fields.Float(required=True, tracking=True)
+    due_date = fields.Date(required=True, tracking=True)
+    paid = fields.Boolean(default=False, tracking=True)
 
     state = fields.Selection(
         [("due", "Due"), ("overdue", "Overdue"), ("paid", "Paid")],

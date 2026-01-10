@@ -1,8 +1,8 @@
-# Car Trade Management
+# 🚗 Car Trade Management
 
 An Odoo module for managing a car trading business. This module helps you manage your car inventory, purchases, sales, and financial transactions.
 
-## Features
+## ✨ Features
 
 - **Car Management:**
   - Maintain a detailed record of each car in your inventory.
@@ -37,7 +37,7 @@ An Odoo module for managing a car trading business. This module helps you manage
 - **Reporting:**
   - Generate XLSX reports for banks.
 
-## Installation
+## 🚀 Installation
 
 1. Clone this repository or download the source code.
 2. Copy the `car_trade_management` folder to your Odoo `addons` directory.
@@ -46,7 +46,7 @@ An Odoo module for managing a car trading business. This module helps you manage
 5. Click on `Update Apps List`.
 6. Search for "Car Trade Management" and click `Install`.
 
-## Usage
+## 🎮 Usage
 
 After installation, you can access the Car Trade Management features from the main Odoo menu. You will find menu items for:
 
@@ -56,12 +56,3 @@ After installation, you can access the Car Trade Management features from the ma
 - Installment Strategies
 - Banks
 - Partners
-
-## Contributing
-
-Contributions are welcome! If you want to contribute to this project, please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Make your changes.
-4. Create a pull request with a clear description of your changes.

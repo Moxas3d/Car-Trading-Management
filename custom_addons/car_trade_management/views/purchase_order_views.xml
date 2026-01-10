@@ -37,7 +37,7 @@
                                 type="object"
                                 name="action_open_cars"
                                 icon="fa-car"
-            invisible="number_of_cars == 0"
+                                invisible="number_of_cars == 0"
                             >
                                 <field
                                     name="number_of_cars"

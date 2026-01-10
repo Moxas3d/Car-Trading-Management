@@ -50,12 +50,12 @@
                         </group>
                         <notebook>
                             <page string="Installments" invisible="payment_type != 'installment'" >
-                                <field name="installment_ids">
+                                <field name="installment_ids" readonly="state == 'done'">
                                     <list editable="bottom">
                                         <field name="sequence"/>
                                         <field name="amount"/>
                                         <field name="due_date"/>
-                                        <field name="paid"/>
+                                        <field name="paid" />
                                         <field name="state"/>
                                     </list>
                                 </field>
