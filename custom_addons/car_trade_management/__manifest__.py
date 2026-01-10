@@ -3,9 +3,7 @@
     "author": "Mohamed Asaad",
     "category": "",
     "version": "18.0.0.1.0",
-    "depends": [
-        "base",
-    ],
+    "depends": ["base", "mail"],
     "data": [
         "security/ir.model.access.csv",
         "data/car_sequence.xml",

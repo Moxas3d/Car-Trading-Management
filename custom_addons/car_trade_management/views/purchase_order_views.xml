@@ -25,16 +25,44 @@
                         <button name="action_confirm" type="object" string="Confirm" class="oe_highlight"
                               invisible="state != 'draft'" />
                         <button name="action_done" type="object" string="Mark as Done" class="oe_highlight"
-                              invisible="state == 'done'" />
+                              invisible="state != 'confirmed'" />
                         <button name="action_cancel" type="object" string="Cancel"
-                              invisible="state in ('done', 'cancel')" />
+                              invisible="state in ('done', 'cancel') " />
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
                     </header>
                     <sheet>
+                        <div name="button_box" class="oe_button_box">
+                            <button
+                                class="oe_stat_button"
+                                type="object"
+                                name="action_open_cars"
+                                icon="fa-car"
+            invisible="number_of_cars == 0"
+                            >
+                                <field
+                                    name="number_of_cars"
+                                    widget="statinfo"
+                                    string="Cars"
+                                />
+                            </button>
+                            <button
+                                class="oe_stat_button"
+                                type="object"
+                                name="action_open_vendor"
+                                icon="fa-user"
+              invisible="vendor_count == 0"
+                            >
+                                <field
+                                    name="vendor_count"
+                                    widget="statinfo"
+                                    string="Vendor"
+                                />
+                            </button>
+                        </div>
                         <group>
                             <group>
                                 <field name="name"/>
-                                <field name="vendor_id"/>
+                                <field name="vendor_id" readonly="state != 'draft'"/>
                             </group>
                             <group>
                                 <field name="number_of_cars"/>
@@ -43,14 +71,14 @@
                         </group>
                         <notebook>
                             <page string="Cars">
-                                <field name="car_ids">
+                                <field name="car_ids" readonly="state != 'draft'" >
                                     <list editable="bottom">
                                         <field name="vin"/>
                                         <field name="brand"/>
                                         <field name="model"/>
                                         <field name="year"/>
                                         <field name="purchase_price"/>
-                                        <field name="state" invisible="1"/> <!-- state should be hidden as it's controlled by PO -->
+                                        <field name="state" readonly="1"/>
                                     </list>
                                     <form>
                                         <group>
@@ -69,7 +97,8 @@
                             </page>
                         </notebook>
                     </sheet>
-                </form>
+                    <chatter />
+              </form>
             </field>
         </record>
 

@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class Purchase(models.Model):
     _name = "car.trading.purchase.order"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = "Car Purchase"
 
     name = fields.Char(default="New", readonly=True)
@@ -18,6 +19,7 @@ class Purchase(models.Model):
             ("cancel", "Cancelled"),
         ],
         default="draft",
+        tracking=True,
     )
 
     number_of_cars = fields.Integer(
@@ -29,6 +31,32 @@ class Purchase(models.Model):
         compute="_compute_purchase_totals",
         store=True,
     )
+
+    vendor_count = fields.Integer(compute="_compute_vendor_count")
+
+    def _compute_vendor_count(self):
+        for record in self:
+            record.vendor_count = 1 if record.vendor_id else 0
+
+    def action_open_vendor(self):
+        return {
+            "name": "Vendor",
+            "type": "ir.actions.act_window",
+            "res_model": "res.partner",
+            "view_mode": "form",
+            "res_id": self.vendor_id.id,
+            "target": "current",
+        }
+
+    def action_open_cars(self):
+        return {
+            "name": "Cars",
+            "type": "ir.actions.act_window",
+            "res_model": "car.trading.car",
+            "view_mode": "list,form",
+            "domain": [("id", "in", self.car_ids.ids)],
+            "target": "current",
+        }
 
     @api.depends("car_ids.purchase_price")
     def _compute_purchase_totals(self):
@@ -88,18 +116,10 @@ class Purchase(models.Model):
 
     def action_cancel(self):
         for rec in self:
-            sold_cars = rec.car_ids.filtered(lambda c: c.state == "sold")
-            if sold_cars:
+            if rec.state == "done":
                 raise ValidationError(
                     "You cannot cancel a purchase order with sold cars."
                 )
 
             rec.state = "cancel"
             rec.car_ids.write({"state": "draft"})
-
-    @api.constrains("state")
-    def _check_edit_after_confirm(self):
-        for rec in self:
-            if rec.state in ("confirmed", "done") and rec._origin:
-                if self.env.context.get("allow_purchase_edit"):
-                    continue

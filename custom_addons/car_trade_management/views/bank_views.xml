@@ -6,6 +6,9 @@
             <field name="model">car.trading.bank</field>
             <field name="arch" type="xml">
                 <list>
+                    <header>
+                          <button name="property_xlsx_report" type="object" string="Print Excel Report" class="btn-primary"/>
+                    </header>
                     <field name="name"/>
                     <field name="interest_rate"/>
                     <field name="max_installment_months"/>
@@ -31,7 +34,8 @@
                             </page>
                         </notebook>
                     </sheet>
-                </form>
+          <chatter />
+        </form>
             </field>
         </record>
 
