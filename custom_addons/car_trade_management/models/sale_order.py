@@ -5,12 +5,14 @@ from dateutil.relativedelta import relativedelta
 
 class SaleOrder(models.Model):
     _name = "car.trading.sale.order"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = "Car Sale"
 
     name = fields.Char(default="New", readonly=True)
 
     customer_id = fields.Many2one(
-        "res.partner", domain=[("partner_type", "=", "customer")]
+        "res.partner",
+        domain=[("partner_type", "=", "customer")],
     )
     car_id = fields.Many2one("car.trading.car")
 
@@ -35,6 +37,7 @@ class SaleOrder(models.Model):
             ("cancel", "Cancelled"),
         ],
         default="draft",
+        tracking=True,
     )
 
     bank_id = fields.Many2one(

@@ -3,6 +3,7 @@ from odoo import models, fields, api
 
 class Car(models.Model):
     _name = "car.trading.car"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = "Car"
 
     name = fields.Char(default="New", readonly=True)
@@ -16,7 +17,7 @@ class Car(models.Model):
     sale_order_id = fields.Many2one("car.trading.sale.order")
 
     purchase_price = fields.Float(required=True)
-    sale_price = fields.Float(related="sale_order_id.sale_price", store=True)
+    sale_price = fields.Float(related="sale_order_id.sale_price", store=True, tracking=True)
 
     state = fields.Selection(
         [

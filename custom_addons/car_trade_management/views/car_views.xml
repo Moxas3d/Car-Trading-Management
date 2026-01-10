@@ -30,20 +30,21 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name"/>
-                                <field name="vin"/>
-                                <field name="brand"/>
-                                <field name="model"/>
-                                <field name="year"/>
+                                <field name="name" readonly="state == 'sold'"/>
+                                <field name="vin" readonly="state == 'sold'"/>
+                                <field name="brand" readonly="state == 'sold'"/>
+                                <field name="model" readonly="state == 'sold'"/>
+                                <field name="year" readonly="state == 'sold'"/>
                             </group>
                             <group>
-                                <field name="purchase_order_id"/>
-                                <field name="sale_order_id"/>
-                                <field name="purchase_price"/>
-                                <field name="sale_price"/>
+                                <field name="purchase_order_id" readonly="state == 'sold'"/>
+                                <field name="sale_order_id" readonly="state == 'sold'"/>
+                                <field name="purchase_price" readonly="state == 'sold'"/>
+                                <field name="sale_price" readonly="state == 'sold'"/>
                             </group>
                         </group>
                     </sheet>
+                    <chatter />
                 </form>
             </field>
         </record>
